@@ -1,5 +1,7 @@
 package com.paymentService.paymentGateway.services;
 
+import com.paymentService.paymentGateway.models.PaymentStatus;
+import com.razorpay.Payment;
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -45,5 +47,16 @@ public class RazorpayGateway implements PaymentGateway{
             throw new RuntimeException("Unable to create a payment link");
         }
         return payment.get("short_url");
+    }
+
+
+    public PaymentStatus getStatus(String paymentId) throws RazorpayException {
+        Payment payment = null;
+        try{
+            payment = this.razorpayClient.payments.fetch(paymentId);
+        }catch (RazorpayException e){
+            throw new RuntimeException("Unable to fetch paymentStatus");
+        }
+        return PaymentStatus.valueOf(payment.get("status"));
     }
 }
